@@ -3,6 +3,9 @@ import React, { useState, useEffect } from "react";
 
 function App() {
   const divs = Array(100).fill(0);
+
+  //=====State mangement ===========
+
   const [color, setColor] = useState(
     Array(100)
       .fill()
@@ -14,11 +17,10 @@ function App() {
     x: 0,
     y: 0,
   });
-  const [showMenu, setShowMenu] = useState(false);
   const [chosenColor, setChosenColor] = useState("red");
-  const [menuFadeOut, setMenuFadeOut] = useState(false);
-  const [menuFadeIn, setMenuFadeIn] = useState(false);
-
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [menuHidden, setMenuHidden] = useState(false);
+  //=====Handlers====
   const handleMouseDown = (e) => {
     if (e.button === 0) {
       setDrawing(true);
@@ -47,31 +49,29 @@ function App() {
   };
 
   const handleChangeColor = (color) => {
-    setMenuFadeOut(true);
     setChosenColor(color);
+    setMenuVisible(false);
     setTimeout(() => {
-      setShowMenu(false);
-      setMenuFadeOut(false);
-    }, 300);
+      setMenuHidden(false);
+    }, 500);
   };
 
   const handleMenuMouseLeave = () => {
-    setMenuFadeOut(true);
+    setMenuVisible(false);
     setTimeout(() => {
-      setShowMenu(false);
-      setMenuFadeOut(false);
-    }, 300);
+      setMenuHidden(false);
+    }, 500);
   };
 
+  //==============
   useEffect(() => {
     const handleContextMenu = (e) => {
-      setRightClickCoordenates({ x: e.clientX, y: e.clientY });
-      setMenuFadeIn(true);
-      setTimeout(() => {
-        setShowMenu(true);
-        setMenuFadeIn(false);
-      }, 300);
       e.preventDefault();
+      setMenuHidden(true);
+      setRightClickCoordenates({ x: e.clientX, y: e.clientY });
+      requestAnimationFrame(() => {
+        setMenuVisible(true);
+      });
     };
     window.addEventListener("contextmenu", handleContextMenu);
     const calculateGrid = () => {
@@ -100,38 +100,37 @@ function App() {
 
   return (
     <React.Fragment>
-      <div
-        className={`menu ${menuFadeOut ? "fade-out" : ""} ${
-          menuFadeIn ? "fade-in" : ""
-        }`}
-        style={{
-          display: showMenu ? "flex" : "none",
-          top: rightClickCoordenates.y,
-          left: rightClickCoordenates.x,
-        }}
-        onMouseLeave={handleMenuMouseLeave}
-      >
+      {menuHidden && (
         <div
-          className="menu-item red"
-          onClick={() => handleChangeColor("red")}
-        ></div>
-        <div
-          className="menu-item blue"
-          onClick={() => handleChangeColor("blue")}
-        ></div>
-        <div
-          className="menu-item yellow"
-          onClick={() => handleChangeColor("yellow")}
-        ></div>
-        <div
-          className="menu-item green"
-          onClick={() => handleChangeColor("green")}
-        ></div>
-        <div
-          className="menu-item orange"
-          onClick={() => handleChangeColor("orange")}
-        ></div>
-      </div>
+          className={`menu ${menuVisible ? "visible" : ""}`}
+          style={{
+            top: rightClickCoordenates.y,
+            left: rightClickCoordenates.x,
+          }}
+          onMouseLeave={handleMenuMouseLeave}
+        >
+          <div
+            className="menu-item red"
+            onClick={() => handleChangeColor("red")}
+          ></div>
+          <div
+            className="menu-item blue"
+            onClick={() => handleChangeColor("blue")}
+          ></div>
+          <div
+            className="menu-item yellow"
+            onClick={() => handleChangeColor("yellow")}
+          ></div>
+          <div
+            className="menu-item green"
+            onClick={() => handleChangeColor("green")}
+          ></div>
+          <div
+            className="menu-item orange"
+            onClick={() => handleChangeColor("orange")}
+          ></div>
+        </div>
+      )}
 
       <div className="col">
         {divs.map((_, colIndex) => {
