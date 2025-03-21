@@ -77,9 +77,7 @@ function App() {
     const calculateGrid = () => {
       const screenHeight = window.innerHeight;
       const screenWidth = window.innerWidth;
-      console.log(screenWidth);
       const cellWidth = Math.round(screenWidth / 100);
-      console.log(cellWidth);
       const possibleRows = Math.floor(screenHeight / cellWidth);
 
       setColor(
